@@ -2,8 +2,9 @@ const mongoose = require("mongoose");
 
 const connectDB = async () => {
   try {
-    await mongoose.connect("mongodb://127.0.0.1:27017/ecom");
+    // await mongoose.connect("mongodb://127.0.0.1:27017/ecom");
 
+    await mongoose.connect("mongodb+srv://admin:secret123@cluster0.ccvpa6y.mongodb.net/ecom")
     console.log("MongoDB Connected ✅");
   } catch (error) {
     console.error("DB connection failed ❌", error);

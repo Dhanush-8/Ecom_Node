@@ -1,6 +1,7 @@
 const User = require("../models/User");
 
-const loginUser = (req, res) => {
+// ✅ LOGIN FUNCTION
+const loginUser = async (req, res) => {
   const { email, password } = req.body || {};
 
   if (!email || !password) {
@@ -10,20 +11,38 @@ const loginUser = (req, res) => {
     });
   }
 
-  if (email === "admin@gmail.com" && password === "1234") {
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    if (user.password !== password) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid password",
+      });
+    }
+
     return res.json({
       success: true,
       message: "Login successful",
+      user,
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
     });
   }
-
-  return res.status(401).json({
-    success: false,
-    message: "Invalid credentials",
-  });
 };
 
-// ✅ ADD THIS FUNCTION
+// ✅ SIGNUP FUNCTION (ADD THIS BACK)
 const signupUser = async (req, res) => {
   const { username, email, password } = req.body || {};
 
@@ -35,22 +54,33 @@ const signupUser = async (req, res) => {
   }
 
   try {
+    // 🔍 Check if user already exists
+    const existingUser = await User.findOne({ email });
+
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: "User already exists",
+      });
+    }
+
+    // ✅ Save new user
     const newUser = new User({ username, email, password });
+    await newUser.save();
 
-    await newUser.save(); // 👈 THIS LINE SAVES TO DB
-
-    res.json({
+    return res.json({
       success: true,
-      message: "User saved in DB",
+      message: "User registered successfully",
       user: newUser,
     });
+
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Error saving user",
     });
   }
 };
 
-// ✅ EXPORT BOTH
+// ✅ EXPORT BOTH (VERY IMPORTANT)
 module.exports = { loginUser, signupUser };
