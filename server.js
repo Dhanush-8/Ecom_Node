@@ -12,6 +12,9 @@ app.use(cors());
 const authRoutes = require("./routes/authRoutes");
 app.use("/api/auth", authRoutes);
 
+const projectRoutes = require("./routes/projectRoutes");
+app.use("/api/projects", projectRoutes);
+
 app.listen(5000, () => {
   console.log("Server running on port 5000");
 });
